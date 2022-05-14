@@ -1,0 +1,82 @@
+---
+title: "BST239 HW2"
+author: "Jonathan Luu"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+```
+
+# Question 8
+
+a. Yes, it would be appropriate. 
+b. If given a list of these patients, then it would be appropriate.
+c. A SRS may work but other designs might be more suitable
+d. If the sample is large enough, the values may be close but other designs would be better.
+
+# Question 10
+
+Option 3 will give the most precision as it has the largest sample size.
+
+# Question 11
+
+```{r}
+data <- c(rep(9, 13), rep(10,35), rep(11,44), rep(12,69),
+          rep(13,36), rep(14,24), rep(15,7), rep(16,3),
+          rep(17,2), rep(18,5), 19, 20)
+hist(data, right=F)
+```
+
+## Part 11a
+
+No, it is not normally distributed and is right-skewed. However, since the sample is around 240 it is large enough that it should be normally distributed.
+
+## Part 11b
+
+```{r}
+paste("The mean is", round(mean(data),3))
+paste("The SE is", round(sqrt(var(data)/length(data)),3))
+paste0("The 95% CI is [", 12.079-1.96*(0.124), ",", 12.079+1.96*(0.124), "]")
+```
+
+## Part 11c
+
+The estimated sample size is 
+
+$$
+\frac{(1.96^2)(3.71)}{0.5^2} = 57
+$$
+
+# Question 12
+
+
+## Part 12a
+
+$$
+\begin{aligned}
+n_0 &= \frac{(1.96)^2 (0.5)^2}{0.1^2} = 96.04\\
+n &= \frac{96.04}{1+96.04/580} = 82.4
+\end{aligned}
+$$
+
+## Part 12b
+
+$$
+\frac{27}{120} \pm 1.96\sqrt{\frac{\frac{27}{120}(1-\frac{27}{120})}{120}} = [0.15,0.30]
+$$
+
+# Question 13
+
+## Part 13a
+
+$$
+\begin{aligned}
+&(1-\frac{745}{2700})(0.2)(0.8)\frac{1}{744}=0.00016\\
+&0.2 \pm 1.96\sqrt{0.00016} = [0.175, 0.225]
+\end{aligned}
+$$
+
+## Part 13b
+Must be a random sample selected, else the 95% CI estimate will be biased.

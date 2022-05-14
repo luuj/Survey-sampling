@@ -1,0 +1,179 @@
+---
+title: "BST239 HW4"
+author: "Jonathan Luu"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, comment=NA, fig.width = 6, fig.height = 4)
+library(gtools)
+ch6.data <- read.csv("C:\\Users\\Jonathan\\OneDrive - Harvard University\\School\\Harvard\\BST239\\HW4\\exercise0602.csv")
+```
+
+# Page 155 #2
+
+## Part a
+
+Find the values of the population quantities $t_x, t_y, S_x, S_y, R, B$.
+
+```{r}
+# Data
+N <- 9
+x <- c(13,7,11,12,4,3,11,3,5)
+y <- c(10,7,13,17,8,1,15,7,4)
+
+# Calculate population quantities
+t_x <- sum(x)
+t_y <- sum(y)
+S_x <- sd(x)
+S_y <- sd(y)
+B <- t_y/t_x
+R <- sum((x-mean(x))*(y-mean(y))) / ((N-1)*S_x*S_y )
+```
+
+$t_x = 69$, $t_y=82$, $S_x=4.09$, $S_y=5.18$, $B=1.19$, $R=0.82$
+
+
+\newpage
+## Part b
+
+```{r}
+# Create data frame
+sample_vals_index <- data.frame(combinations(N,3))
+colnames(sample_vals_index) <- c("S1", "S2", "S3")
+sample_vals_x <- matrix(x[combinations(N,3)], ncol=3)
+sample_vals_y <- matrix(y[combinations(N,3)], ncol=3)
+
+# Calculate table quantities
+sample_vals_index$x_bar <- apply(sample_vals_x, 1, mean)
+sample_vals_index$y_bar <- apply(sample_vals_y, 1, mean)
+sample_vals_index$B <- sample_vals_index$y_bar/sample_vals_index$x_bar
+sample_vals_index$t_SRS <- N*sample_vals_index$y_bar
+sample_vals_index$t_yr <- t_x*sample_vals_index$B
+
+# Print table
+print(sample_vals_index, row.names = FALSE)
+```
+
+\newpage
+## Part c
+```{r, echo=FALSE}
+# Histogram of Ny_bar and t_yr
+hist(sample_vals_index$t_SRS, breaks=seq(20,145,5))
+hist(sample_vals_index$t_yr, breaks=seq(20,145,5))
+```
+
+The two histograms look slightly different, with the SRS plot being more spread out while the $\hat{t}_{yr}$ plot being more centered around 80. The SRS plot also has more extreme values compared to the $\hat{t}_{yr}$ plot.
+
+\newpage
+## Part d
+
+```{r}
+mean(sample_vals_index$t_yr)
+var(sample_vals_index$t_yr)
+
+mean(sample_vals_index$t_SRS)
+var(sample_vals_index$t_SRS)
+```
+
+The means of both sampling distributions are around 82. However, the variance of the $\hat{t}_{yr}$ sampling distribution is much lower at 196.96 compared to the SRS sampling distribution at 489.33. Compared to the actual value of $t_y=82$, the bias is very small at $82.792-82=0.792$.
+
+## Part e
+
+$$
+\begin{aligned}
+Bias &= (1-\frac{n}{N})\frac{1}{n*\bar{x}_u}(BS^2_x - RS_xS_y)\\
+&=(1-\frac{3}{9})\frac{1}{3*7.67}(1.19*16.75 - 0.81*4.09*5.18)\\
+&=0.08
+\end{aligned}
+$$
+
+The approximation is off by a magnitude of 10.
+
+\newpage
+# Page 211 #14
+
+Took a SRS of 4 high schools from a region of 29 high schools.
+
+```{r}
+ch5.data <- data.frame(n_student = c(1471,890,1021,1587), n_female = c(792,447,511,800),
+                       n_interview = c(25,15,20,40), n_smoker = c(10,3,6,27))
+```
+
+## Part a
+
+Estimate the % of female high school students in the region who smoke, along with a 95% CI.
+
+The sample proportion is $46/100=0.46$. Using the weighted formula (5.20), the estimated sample proportion is 0.372. 
+
+
+## Part b
+
+Estimate the total number of female high school students in the region who smoke, along with a 95% CI.
+
+$$
+\hat{t}_{unb} = \sum_{i} \sum_{j} \frac{NM_i}{n m_i}y_{ij}
+$$
+
+```{r}
+N <- 29
+n <- 4
+M <- ch5.data$n_female
+m <- ch5.data$n_interview
+y <- ch5.data$n_smoker
+
+weight <- (N/n)*(M/m)
+t_unb <- sum(weight*y)
+
+ti <- (M/m)*y
+s_t2 <- 1/(n-1) * sum((ti-t_unb/N)^2)
+var_t_tunb <- sqrt(N^2*(1-n/N)*(s_t2/n))
+```
+
+Therefore an estimate of the total number of female high school students in the region who smoke is 7971. Using (5.24) as an estimate of the variance, we get a 95% CI of (2258, 13684).
+
+## Part c
+
+Assuming that the MSB and MSW are the same, a design for a cluster sample for this study would be to travel to n=5 different schools out of N=35 school districts. Since 50 hours are used up for other tasks and the investigator has a limit of 300 hours with a 30 minute time per interview, she has time for around 500 interviews. She can achieve this by splitting this up into 100 interviews per school district. 
+
+\newpage
+# Page 267 #2
+
+## Part a
+
+```{r}
+# Generate cumulative sum
+ch6.data$cpsi <- cumsum(ch6.data$psi)
+
+# Generate 10 random numbers between 0 and 1
+set.seed(123)
+runif(n=10)
+```
+
+Using the cumulative sum and my 10 randomly generated numbers, I get a sample of {6,19,8,21,24,3,13,21,13,9}.
+
+
+## Part b
+
+```{r}
+curr_size <- 0
+sample_list <- integer(10)
+
+while (curr_size <= 10){
+   # Generate number between 1 and 25
+   item <- sample(1:25, 1)
+   
+   # Generate probability between 0 and 0.078
+   prob <- runif(n=1, min=0, max=max(ch6.data$psi))
+   
+   # If the generated probability is less than the corresponding psi, accept
+   if (prob < ch6.data$psi[item]){
+      sample_list[curr_size] <- item
+      curr_size <- curr_size + 1
+   }
+}
+
+sample_list
+```
+
+

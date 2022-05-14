@@ -1,0 +1,176 @@
+---
+title: "BST239 HW3"
+author: "Jonathan Luu"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, comment = NA)
+```
+
+# Chapter 3 questions
+
+## Question 3
+
+```{r, include=FALSE}
+q3.data <- c(66,59,70,83,82,71)
+```
+
+### Part 3a
+
+```{r, echo=FALSE}
+paste0("The mean is ", round(mean(q3.data),2) )
+paste0("The variance is ", round(var(q3.data), 2) )
+```
+
+### Part 3b
+
+There are 15 SRS's of size 4 possible.
+
+
+### Part 3c
+
+These are the possible combinations of student numbers:
+
+```{r, echo=FALSE}
+library(gtools)
+combinations(6,4)
+```
+
+These are the corresponding means:
+
+```{r}
+q3c.data <- combinations(6,4)
+apply(q3c.data, 1, function(x){
+   mean(q3.data[x])
+})
+```
+
+The variance formula from Equation (2.9) is 
+
+$$
+\begin{aligned}
+V(\bar{y}) &= \frac{S^2}{n}(1-\frac{n}{N})\\
+&=\frac{86.17}{4}(1-\frac{4}{6})\\
+&=7.18
+\end{aligned}
+$$
+
+### Part 3d
+
+There are 9 different possible stratified samples.
+
+### Part 3e
+
+These are the possible combinations of student numbers:
+
+1245
+1246
+1256
+1345
+1346
+1356
+2345
+2346
+2356
+
+These are the possible combinations that are not possible:
+
+1234
+1235
+1236
+1456
+2456
+3456
+
+### Part 3f
+
+These are the corresponding stratified means:
+
+```{r}
+strat.vals <- matrix(c(1,2,4,5,
+                       1,2,4,6,
+                       1,2,5,6,
+                       1,3,4,5,
+                       1,3,4,6,
+                       1,3,5,6,
+                       2,3,4,5,
+                       2,3,4,6,
+                       2,3,5,6), byrow=TRUE, nrow=9)
+
+apply(strat.vals, 1, function(x){
+   mean(q3.data[x])
+})
+```
+The variances of each strata are:
+
+```{r}
+var(q3.data[1:3])
+var(q3.data[4:6])
+```
+
+$$
+\begin{aligned}
+V(\bar{y}_{str}) &= \sum_{h=1}^H(1-\frac{n_h}{N_h})(\frac{N_h}{N})^2 \frac{s_h^2}{n_h}\\
+&=(1-\frac{2}3{})(\frac{3}{6})^2(\frac{31}{2}) + (1-\frac{2}3{})(\frac{3}{6})^2(\frac{44.3}{2})\\
+&=3.14
+\end{aligned}
+$$
+
+which is around half the variance of the unstratified sample.
+
+\newpage
+## Question 15
+
+### Part 15a
+
+If we have the same number of people in each sample, an advantage is that calculations are easier. Some disadvantages are that it is more logistically difficult to do - as we have to make sure all of our samples come through.
+
+### Part 15b
+
+```{r}
+N <- 190+407+811
+
+y_bar <- (190/N)*3.925 + (407/N)*3.938 + (811/N)*3.942
+```
+
+An estimate for $\bar{y}_U$ is 3.939.
+
+Using the variance formula from 3f, we get the variance as: 
+
+$$
+\begin{aligned}
+&(1-\frac{21}{190})(\frac{190}{1408})^2(\frac{0.037^2}{21}) + 
+(1-\frac{14}{407})(\frac{407}{1408})^2(\frac{0.052^2}{14}) + 
+(1-\frac{22}{811})(\frac{811}{1408})^2(\frac{0.070^2}{22})\\
+&=8.85\text{e-05}
+\end{aligned}
+$$
+
+Using $\bar{y}_{str} \pm z_{\alpha/2} \text{SE}(\bar{y}_{str})$, we get $3.939 \pm 1.96(0.009) = [3.912,3.948]$
+
+There is little evidence to show prices are different in the three strata.
+
+
+\newpage
+## Question 21
+
+Construct a population where proportional allocation variance is larger than the SRS.
+
+Men have values: 3, 3.1, 3.2
+Women have values: 3.3,3.4,3.5
+
+Since the more unequal the strata means better precision for proportional allocation, the closer they are, the less efficient the method is.
+
+## Question 32
+
+We could stratify organizations into two groups : (A,B,E) and (C,D)
+
+We could stratify counties by into two groups as well: (Apache: Maricopa) and (Mohave:LaPaz)
+
+\newpage
+## Critique the study in your role within this course. Focus on the design and conclusions. What were they trying to achieve? How well did they achieve their aims?
+
+The goal of the study was to determine if the levels of PFAS, arsenic, and lead around the US were above EPA action level. To do this, they designed their sampling scheme by first selecting 10 of 12 of the EPA’s jurisdictional regions. Based on these regions, they asked 120 volunteers living in these respective regions to take a sample of their water. These volunteers were selected from a pool of 6000 volunteers per recommendation of the CR’s statisticians to get a representative mix of rural and urban water systems, stating that the covered systems serviced more than 19 million people. Although they did not specify how they selected these individuals or go into more detail about how they tested their water source, they had a decent number of individuals sampling their water. One issue they discussed was that only one water sample was taken, and water can vary day to day so there is variation introduced. Furthermore, they did not specify how many individuals were from each jurisdiction, so we are not shown if the regions are represented equally. They discovered that 118 out of 120 samples had concerning levels of PFAS; however, they later state that PFAS is not included in the EPA’s water standards. Furthermore, I believe they utilized this result to provide an enticing headline, as they clarify that although a lot of the water samples had traces of lead, only one instance had lead levels above the EPA action level. They also do not state the number of concerning arsenic cases – only that there were traces found in most samples as well. 
+
+I believe better sampling techniques could have been employed to better test their goals. More individuals per region, as well as more than one sample per individual, could have been done. Potential cost issues may have arisen for this study, depending on how expensive it would have been to test the water. They could have also reported more interesting statistics like their comment on how large Latino populations were more likely to have violations. Overall, it was an interesting study, and they discuss their study’s limitations. It gave a good overview of potential issues of water quality in the US and some potential solutions to the problem.
